@@ -1,0 +1,26 @@
+{
+    "name": "justin/data_grid",
+    "description": "Data grid table, bootstrap 3",
+    "license": "MIT",
+    "keywords": ["data table", "data grid table", "data grid"],
+    "authors": [
+        {
+            "name": "Justin Luong",
+            "email": "cong.itsoft@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.3.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Justin\\DataGrid\\": "src"
+        },
+        "files": [
+            "src/helper.php"
+        ]
+    }
+}
