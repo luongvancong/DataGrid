@@ -16,7 +16,7 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
     $faker = Faker\Factory::create();
     $faker->addProvider(new Faker\Provider\Barcode($faker));
     $data = [];
-    for($i = 0; $i < 10; $i ++) {
+    for($i = 0; $i < 100; $i ++) {
         $data[] = [
             'id' => $faker->ean13,
             'name' => $faker->name,
@@ -36,11 +36,11 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
     $productGrid->setHeader('quantity', 'Quantity');
     $productGrid->setData($data);
 
+    $productGrid->setSerialNumber('stt', 10);
+
     $productGrid->setColumn('name', function($item) {
         return $item['name'] . ' SHIT';
     });
-
-    $productGrid->setSerialNumber('stt', 10);
 
     echo $productGrid->output();
 
