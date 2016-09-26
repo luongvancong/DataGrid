@@ -64,7 +64,7 @@ class DataGrid {
         $html = '';
         foreach($headers as $field => $title) {
             if( $this->haveSortAble($field) ) {
-                $html .= '<th data-field="'. $field .'"><div><a href="">'. $this->getHeaderTitle($field) .'</a></div></th>';
+                $html .= '<th data-field="'. $field .'"><div><a href="'. $this->getUrlWithSortQueryString($field) .'">'. $this->getHeaderTitle($field) .'</a></div></th>';
             } else {
                 $html .= '<th data-field="'. $field .'"><div>'. $title .'</div></th>';
             }
@@ -253,18 +253,66 @@ class DataGrid {
     }
 
 
+    /**
+     * Get full url with sort params
+     * @param  string $field
+     * @return url
+     */
+    public function getUrlWithSortQueryString($field)
+    {
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $sortKey = isset($_GET['sort_key']) ? $_GET['sort_key'] : '';
+        $sortValue = isset($_GET['sort_value']) ? $_GET['sort_value'] : 'desc';
+
+        $query = ['sort_key' => $field, 'sort_value' => $sortValue];
+        $query = array_merge($_GET, $query);
+
+        if($sortKey == $field) {
+            if($sortValue == 'desc') {
+                $sortValue = 'asc';
+            }
+            else {
+                $sortValue = 'desc';
+            }
+
+            $query = ['sort_key' => $sortKey, 'sort_value' => $sortValue];
+            $query = array_merge($_GET, $query);
+        }
+
+        $parseUrl = parse_url($url);
+
+        return $parseUrl['path'] . '?' . http_build_query($query);
+
+    }
+
+
+    /**
+     * Set custom argument
+     * @param mixed $key
+     * @param mixed $value
+     */
     public function setArgs($key, $value)
     {
         $this->args[$key] = $value;
     }
 
 
+    /**
+     * Get custom argument
+     * @param  mixed $key
+     * @return mixed
+     */
     public function getArg($key)
     {
         return array_key_exists($key, $this->args) ? $this->args[$key] : null;
     }
 
 
+    /**
+     * Column serial number
+     * @param string $field
+     * @param int $perPage
+     */
     public function setSerialNumber($field, $perPage)
     {
         $self = $this;
