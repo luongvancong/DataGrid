@@ -39,7 +39,7 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
     $productGrid->setSerialNumber('stt', 10);
 
     $productGrid->setColumn('name', function($item) {
-        return $item['name'] . ' SHIT';
+        return '<b>' . $item['name'] . '</b>';
     });
 
     echo $productGrid->output();
