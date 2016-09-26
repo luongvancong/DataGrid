@@ -196,7 +196,7 @@ class DataGrid {
         }
 
         if(is_object($data) && method_exists($data, '__get')) {
-            $value = $data->__get(key);
+            $value = $data->__get($key);
         }
 
         if(is_array($data) && array_key_exists($key, $data)) {
