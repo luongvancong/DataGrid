@@ -12,6 +12,8 @@ class DataGrid {
 
     protected $callable = array();
 
+    protected $searchCallable = array();
+
     protected $attributes = array();
 
     protected $args = array();
@@ -89,7 +91,12 @@ class DataGrid {
         foreach($data as $key => $info) {
             $html .= '<tr>';
             foreach($headers as $field => $label) {
-                $html .= '<td>'. $this->getSearchControl($field) .'</td>';
+                if($this->haveSearchCallable($field)) {
+                    $html .= '<td>' . call_user_func_array($this->searchCallable[$field], array()) . '</td>';
+                } else {
+                    $html .= '<td>'. $this->getSearchControl($field) .'</td>';
+                }
+
             }
             $html .= '</tr>';
             break;
@@ -125,6 +132,23 @@ class DataGrid {
     public function setColumn($key, $callable = null)
     {
         $this->callable[$key] = $callable;
+    }
+
+
+    /**
+     * Set custom search column
+     * @param string $key
+     * @param callable $callable
+     */
+    public function setSearchColumn($key, $callable = null)
+    {
+        $this->searchCallable[$key] = $callable;
+    }
+
+
+    public function haveSearchCallable($key)
+    {
+        return array_key_exists($key, $this->searchCallable) && is_callable($this->searchCallable[$key]);
     }
 
 

@@ -42,6 +42,13 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
         return '<b>' . $item['name'] . '</b>';
     });
 
+    $productGrid->setSearchColumn('quantity', function() {
+        return '
+            <div><input type="text" class="form-control" name="q_min" placeholder="Min:" /></div>
+            <div><input type="text" class="form-control" name="q_max" placeholder="Max:" /></div>
+        ';
+    });
+
     echo $productGrid->output();
 
 ?>
