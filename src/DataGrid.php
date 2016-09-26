@@ -190,13 +190,20 @@ class DataGrid {
      */
     public function getValue($data, $key)
     {
+        $value = null;
         if(is_object($data) && property_exists($data, $key)) {
-            return $data->$key;
+            $value = $data->$key;
+        }
+
+        if(is_object($data) && method_exists($data, '__get')) {
+            $value = $data->__get(key);
         }
 
         if(is_array($data) && array_key_exists($key, $data)) {
-            return $data[$key];
+            $value = $data[$key];
         }
+
+        return $value;
     }
 
 
