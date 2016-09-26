@@ -14,48 +14,59 @@ class DataGrid {
 
     protected $attributes = array();
 
-    public function getSortAble() {
-        return $this->sortable;
-    }
+    protected $args = array();
 
-    public function setSortAble(array $sortable)
+
+    /**
+     * Set header each column
+     * @param string  $field
+     * @param string  $title
+     * @param int|null  $width
+     * @param boolean $sort
+     * @param boolean $search
+     */
+    public function setHeader($field, $title, $width = null, $sort = false, $search = false)
     {
-        $this->sortable = $sortable;
+        $this->headers[$field] = $title;
+        $this->attributes[$field]['width'] = $width;
+        $this->sortable[$field] = $sort;
+        $this->search[$field] = $search;
+
     }
 
-    public function getHeaders() {
-        return $this->headers;
-    }
 
-    public function setHeaders(array $headers)
-    {
-        foreach($headers as $key => $value) {
-            if(is_array($value) && array_key_exists(1, $value)) {
-                $this->attributes[$key]['width'] = $value[1];
-            }
-        }
-
-        $this->headers = $headers;
-    }
-
+    /**
+     * Set data
+     * @param mixed $data
+     */
     public function setData($data)
     {
         $this->data = $data;
     }
 
+
+    /**
+     * Get data
+     * @return mixed
+     */
     public function getData() {
         return $this->data;
     }
 
+
+    /**
+     * Show header
+     * @return html
+     */
     public function showHeader()
     {
         $headers = $this->getHeaders();
         $html = '';
         foreach($headers as $field => $title) {
-            if( $this->hasSortAble($field) ) {
-                $html .= '<th data-field="'. $field .'"><a href="">'. $this->getHeaderTitle($headers, $field) .'</a></th>';
+            if( $this->haveSortAble($field) ) {
+                $html .= '<th data-field="'. $field .'"><div><a href="">'. $this->getHeaderTitle($field) .'</a></div></th>';
             } else {
-                $html .= '<th data-field="'. $field .'">'. $title .'</th>';
+                $html .= '<th data-field="'. $field .'"><div>'. $title .'</div></th>';
             }
         }
 
@@ -63,12 +74,28 @@ class DataGrid {
     }
 
 
+    /**
+     * Show body
+     * @return html
+     */
     public function showBody()
     {
         $data = $this->getData();
         $headers = $this->getHeaders();
 
         $html = '';
+
+        // Show search control
+        foreach($data as $key => $info) {
+            $html .= '<tr>';
+            foreach($headers as $field => $label) {
+                $html .= '<td>'. $this->getSearchControl($field) .'</td>';
+            }
+            $html .= '</tr>';
+            break;
+        }
+
+        // Show data
         foreach($data as $key => $info) {
             $html .= '<tr>';
             foreach($headers as $field => $label) {
@@ -90,23 +117,77 @@ class DataGrid {
     }
 
 
+    /**
+     * Custom display column what you want
+     * @param string $key
+     * @param callable $callable
+     */
     public function setColumn($key, $callable = null)
     {
         $this->callable[$key] = $callable;
     }
 
 
+    /**
+     * Output html
+     * @return html
+     */
+    public function output() {
+        return '
+            <form method="GET" action="">
+                <button type="submit" style="display:none">Search</button>
+                <table class="table">
+                    <thead>'. $this->showHeader() .'</thead>
+                    <tbody>'. $this->showBody() .'</tbody>
+                </table>
+            </form>';
+    }
+
+
+     /**
+     * Get sortable array
+     * @return array
+     */
+    public function getSortAble() {
+        return $this->sortable;
+    }
+
+
+    /**
+     * Get headers array
+     * @return array
+     */
+    public function getHeaders() {
+        return $this->headers;
+    }
+
+    /**
+     * Have column callable
+     * @param  string  $key
+     * @return boolean
+     */
     public function isCallable($key)
     {
         return isset($this->callable[$key]) && is_callable($this->callable[$key]);
     }
 
+
+    /**
+     * Have column attribute?
+     * @param  string $key
+     * @return boolean
+     */
     public function haveAttribute($key)
     {
-        return isset($this->attributes[$key]);
+        return isset($this->attributes[$key]) && !is_null($this->attributes[$key]);
     }
 
-
+    /**
+     * Get value of field
+     * @param  mixed $data
+     * @param  string $key
+     * @return mixed
+     */
     public function getValue($data, $key)
     {
         if(is_object($data) && property_exists($data, $key)) {
@@ -119,31 +200,77 @@ class DataGrid {
     }
 
 
-    public function getHeaderTitle($headers, $key)
+    /**
+     * Get header title
+     * @param  string $key
+     * @return mixed
+     */
+    public function getHeaderTitle($key)
     {
-        if( array_key_exists($key, $headers) ) {
-            if( is_array($headers[$key]) ) {
-                return array_shift($headers[$key]);
-            } else{
-                return $headers[$key];
-            }
+        if( array_key_exists($key, $this->getHeaders()) ) {
+            return $this->headers[$key];
         }
     }
 
-    public function output() {
-        return '<table class="table">
-            <thead>'. $this->showHeader() .'</thead>
-            <tbody>'. $this->showBody() .'</tbody>
-        </table>';
+
+    /**
+     * Have sortable
+     * @param  string $field
+     * @return bool
+     */
+    private function haveSortAble($field) {
+        return array_key_exists($field, $this->getSortAble()) && $this->sortable[$field] === true ? true : false;
     }
 
 
-    private function hasSortAble($field) {
-        if(array_key_exists($field, $this->getSortAble())) {
-            return true;
+    /**
+     * Have search
+     * @param  string $field
+     * @return bool
+     */
+    private function haveSearch($field) {
+        return array_key_exists($field, $this->search) && $this->search[$field] === true ? true : false;
+    }
+
+
+    /**
+     * Get search control
+     * @param  string $field
+     * @return html
+     */
+    private function getSearchControl($field) {
+        if($this->haveSearch($field)) {
+            $value = isset($_GET[$field]) ? $_GET[$field] : '';
+            return '<div><input type="text" name="'. $field .'" value="'. $value .'" class="form-control" placeholder="'. $this->getHeaderTitle($field) .'" /></div>';
         }
-
-        return false;
     }
+
+
+    public function setArgs($key, $value)
+    {
+        $this->args[$key] = $value;
+    }
+
+
+    public function getArg($key)
+    {
+        return array_key_exists($key, $this->args) ? $this->args[$key] : null;
+    }
+
+
+    public function setSerialNumber($field, $perPage)
+    {
+        $self = $this;
+        $page = isset($_GET['page']) ? $_GET['page'] : 1;
+        $serial = ($page - 1) * $perPage;
+        $this->setArgs($field, $serial);
+        $this->setColumn($field, function($item) use($self) {
+            $no = $self->getArg('no');
+            $no ++;
+            $self->setArgs('no', $no);
+            return $no;
+        });
+    }
+
 
 }

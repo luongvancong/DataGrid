@@ -1,4 +1,5 @@
-<?php error_reporting( E_ALL );ini_set('display_errors', 1);
+<?php session_start();
+error_reporting( E_ALL );ini_set('display_errors', 1);
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -15,33 +16,31 @@
     $faker = Faker\Factory::create();
     $faker->addProvider(new Faker\Provider\Barcode($faker));
     $data = [];
-    for($i = 0; $i < 100; $i ++) {
+    for($i = 0; $i < 10; $i ++) {
         $data[] = [
             'id' => $faker->ean13,
             'name' => $faker->name,
-            'quantity' => $faker->randomDigit
+            'address' => $faker->address,
+            'company' => $faker->company,
+            'quantity' => $faker->randomDigit,
         ];
     }
 
     $productGrid = new Justin\DataGrid\DataGrid();
-    $productGrid->setHeaders([
-        'id'       => array('ID', 30),
-        'name'     => array('Name'),
-        'quantity' => 'Quantity'
-    ]);
 
-    $productGrid->setSortAble([
-        'id' => array('id', true),
-        'name' => array('name', true)
-    ]);
-
+    $productGrid->setHeader('stt', "No");
+    $productGrid->setHeader('id', 'ID', null, true, true);
+    $productGrid->setHeader('name', 'Name', null, true, true);
+    $productGrid->setHeader('address', 'Addr', null, true, true);
+    $productGrid->setHeader('company', 'Company', null, true, true);
+    $productGrid->setHeader('quantity', 'Quantity');
     $productGrid->setData($data);
 
     $productGrid->setColumn('name', function($item) {
         return $item['name'] . ' SHIT';
     });
 
-    $productGrid->setColumn('quantity', 30);
+    $productGrid->setSerialNumber('stt', 10);
 
     echo $productGrid->output();
 
