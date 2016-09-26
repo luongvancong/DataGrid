@@ -28,6 +28,8 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
 
     $productGrid = new Justin\DataGrid\DataGrid();
 
+    // $productGrid->setHeader('checkbox', "Bulk", null, false, true);
+    $productGrid->showBulkAction();
     $productGrid->setHeader('stt', "No");
     $productGrid->setHeader('id', 'ID', null, true, true);
     $productGrid->setHeader('name', 'Name', null, true, true);
@@ -36,6 +38,7 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
     $productGrid->setHeader('quantity', 'Quantity');
     $productGrid->setData($data);
 
+    $productGrid->setCheckboxColumn('checkbox');
     $productGrid->setSerialNumber('stt', 10);
 
     $productGrid->setColumn('name', function($item) {
@@ -48,6 +51,10 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
             <div><input type="text" class="form-control" name="q_max" placeholder="Max:" /></div>
         ';
     });
+
+    // $productGrid->setSearchColumn('checkbox', function() {
+    //     return '<input type="checkbox">';
+    // });
 
     echo $productGrid->output();
 

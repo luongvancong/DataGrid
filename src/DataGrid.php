@@ -112,7 +112,7 @@ class DataGrid {
                 }
 
                 if( $this->isCallable($field)  ) {
-                    $html .= '<td '. $style .'>'. call_user_func_array($this->callable[$field], array($this->data[$key])) .'</td>';
+                    $html .= '<td '. $style .'>'. call_user_func_array($this->callable[$field], array($info)) .'</td>';
                 } else {
                     $html .= '<td '. $style .'>'. $this->getValue($info, $field) .'</td>';
                 }
@@ -164,6 +164,7 @@ class DataGrid {
                     <thead>'. $this->showHeader() .'</thead>
                     <tbody>'. $this->showBody() .'</tbody>
                 </table>
+                '. $this->scripts() .'
             </form>';
     }
 
@@ -349,6 +350,49 @@ class DataGrid {
             $self->setArgs('no', $no);
             return $no;
         });
+    }
+
+
+    public function setCheckboxColumn($field)
+    {
+        $this->setColumn($field, function($item) use ($field) {
+            return '<input type="checkbox" class="__data_grid_bulk_option">';
+        });
+    }
+
+
+    public function showBulkAction()
+    {
+        $this->setHeader('checkbox', "Bulk", 100, false, true);
+        $this->setCheckboxColumn('checkbox');
+        $this->setSearchColumn('checkbox', function() {
+            return '
+            <select name="bulk_action" class="form-control input-sm">
+                <option value="">Action</option>
+                <option value="delete">Delete</option>
+                <option value="trash">Trash</option>
+            </select>
+            <input type="checkbox" name="___bulk_check_all" id="__data_grid_bulk_check_all">
+            ';
+        });
+    }
+
+
+    public function scripts() {
+        return '<script>
+            document.getElementById("__data_grid_bulk_check_all").addEventListener("click", function() {
+                var options = document.getElementsByClassName("__data_grid_bulk_option");
+                if(this.checked) {
+                    for(var i = 0; i < options.length; i ++) {
+                        options[i].checked = true;
+                    }
+                } else {
+                    for(var i = 0; i < options.length; i ++) {
+                        options[i].checked = false;
+                    }
+                }
+            });
+        </script>';
     }
 
 
