@@ -273,7 +273,7 @@ class DataGrid {
     private function getSearchControl($field) {
         if($this->haveSearch($field)) {
             $value = isset($_GET[$field]) ? $_GET[$field] : '';
-            return '<div><input type="text" name="'. $field .'" value="'. $value .'" class="form-control" placeholder="'. $this->getHeaderTitle($field) .'" /></div>';
+            return '<div><input type="text" name="'. $field .'" value="'. $value .'" class="form-control input-sm" placeholder="'. $this->getHeaderTitle($field) .'" /></div>';
         }
     }
 
@@ -353,14 +353,22 @@ class DataGrid {
     }
 
 
+    /**
+     * Set a column become to checkbox
+     * @param string $field
+     */
     public function setCheckboxColumn($field)
     {
         $this->setColumn($field, function($item) use ($field) {
-            return '<input type="checkbox" class="__data_grid_bulk_option">';
+            return '<input type="checkbox" name="bulk_option[]" value="'. $this->getValue($item, 'id') .'" class="__data_grid_bulk_option">';
         });
     }
 
 
+    /**
+     * Show bulk action
+     * @return html
+     */
     public function showBulkAction()
     {
         $this->setHeader('checkbox', "Bulk", 100, false, true);
@@ -377,19 +385,16 @@ class DataGrid {
         });
     }
 
-
+    /**
+     * Javascripts
+     * @return script
+     */
     public function scripts() {
         return '<script>
             document.getElementById("__data_grid_bulk_check_all").addEventListener("click", function() {
                 var options = document.getElementsByClassName("__data_grid_bulk_option");
-                if(this.checked) {
-                    for(var i = 0; i < options.length; i ++) {
-                        options[i].checked = true;
-                    }
-                } else {
-                    for(var i = 0; i < options.length; i ++) {
-                        options[i].checked = false;
-                    }
+                for(var i = 0; i < options.length; i ++) {
+                    options[i].checked = this.checked;
                 }
             });
         </script>';

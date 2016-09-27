@@ -4,7 +4,7 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
 <html>
 <head>
     <title>Data table</title>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
 </head>
 <body>
 <?php
@@ -28,17 +28,14 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
 
     $productGrid = new Justin\DataGrid\DataGrid();
 
-    // $productGrid->setHeader('checkbox', "Bulk", null, false, true);
-    $productGrid->showBulkAction();
+
     $productGrid->setHeader('stt', "No");
-    $productGrid->setHeader('id', 'ID', null, true, true);
-    $productGrid->setHeader('name', 'Name', null, true, true);
-    $productGrid->setHeader('address', 'Addr', null, true, true);
-    $productGrid->setHeader('company', 'Company', null, true, true);
+    $productGrid->setHeader('id', 'ID', null, true);
+    $productGrid->setHeader('name', 'Name', null, true);
+    $productGrid->setHeader('address', 'Addr', null, true);
+    $productGrid->setHeader('company', 'Company', null, true);
     $productGrid->setHeader('quantity', 'Quantity');
     $productGrid->setData($data);
-
-    $productGrid->setCheckboxColumn('checkbox');
     $productGrid->setSerialNumber('stt', 10);
 
     $productGrid->setColumn('name', function($item) {
@@ -47,14 +44,10 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
 
     $productGrid->setSearchColumn('quantity', function() {
         return '
-            <div><input type="text" class="form-control" name="q_min" placeholder="Min:" /></div>
-            <div><input type="text" class="form-control" name="q_max" placeholder="Max:" /></div>
+            <div><input type="text" class="form-control input-sm" name="q_min" placeholder="Min:" /></div>
+            <div><input type="text" class="form-control input-sm" name="q_max" placeholder="Max:" /></div>
         ';
     });
-
-    // $productGrid->setSearchColumn('checkbox', function() {
-    //     return '<input type="checkbox">';
-    // });
 
     echo $productGrid->output();
 
