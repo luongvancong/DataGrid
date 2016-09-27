@@ -2,33 +2,57 @@
 
 ## Methods
 
-    /**
-    $field : Field name
-    $title: Title
-    $width: Column width
-    $sort: Sort this column?
-    $search: Search this column?
-    */
+**Create an object**
+
+    $grid = new Justin\DataGrid\DataGrid();
+
+**Set header**
+
     setHeader($field, $title, $width = null, $sort = false, $search = false);
 
+    $grid->setHeader('id', 'ID', 50, true, true);
 
 
-    /**
-    $data: Array or Collection
-    */
+`$field` : Field name
+
+`$title`: Title
+
+`$width`: Column width
+
+`$sort`: Sort this column?
+
+`$search`: Search this column?
+
+
+**Set data**
+
     setData($data);
 
+    $grid->setData($data);
 
-    /**
-    $field: Field name
-    $callable: Callback function to custom display of the field
-     */
+**Custom column**
+
     setColumn($field, $callable = null);
 
+    $grid->setColumn('name', function($item) {
+        return '<b>'. $item->name .'</b>';
+    });
 
-    /**
-     * Output the html
-     */
+**Custom search column**
+
+    $grid->setSearchColumn('quantity', function() {
+        return '
+            <div><input type="text" class="form-control input-sm" name="q_min" placeholder="Min:" /></div>
+            <div><input type="text" class="form-control input-sm" name="q_max" placeholder="Max:" /></div>
+        ';
+    });
+
+**Bulk action**
+
+    $grid->showBulkAction();
+
+**Output**
+
     output();
 
 
@@ -36,6 +60,7 @@
 
         $productGrid = new Justin\DataGrid\DataGrid();
 
+        $productGrid->showBulkAction();
         $productGrid->setHeader('stt', "No");
         $productGrid->setHeader('id', 'ID', null, true, true);
         $productGrid->setHeader('name', 'Name', null, true, true);
@@ -48,6 +73,13 @@
 
         $productGrid->setColumn('name', function($item) {
             return $item['name'] . ' SHIT';
+        });
+
+        $productGrid->setSearchColumn('quantity', function() {
+            return '
+                <div><input type="text" class="form-control input-sm" name="q_min" placeholder="Min:" /></div>
+                <div><input type="text" class="form-control input-sm" name="q_max" placeholder="Max:" /></div>
+            ';
         });
 
         echo $productGrid->output();

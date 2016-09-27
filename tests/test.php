@@ -28,7 +28,7 @@ error_reporting( E_ALL );ini_set('display_errors', 1);
 
     $productGrid = new Justin\DataGrid\DataGrid();
 
-
+    $productGrid->showBulkAction();
     $productGrid->setHeader('stt', "No");
     $productGrid->setHeader('id', 'ID', null, true);
     $productGrid->setHeader('name', 'Name', null, true);
